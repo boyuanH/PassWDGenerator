@@ -3,6 +3,7 @@ package boyuan.PWGenerator;
 import javax.print.DocFlavor;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Random;
 
 /**
  * Created by BoyuanHuang on 2017/6/18.
@@ -111,6 +112,10 @@ public class PWGenerator {
         return stringBuffer.toString();
     }
 
+    private String replaceHEXValueToLowerSequenceByEasyReplace(String sourceString){
+        return  replaceHEXValueToCapitalSequenceByEasyReplace(sourceString).toLowerCase();
+    }
+
     private String replaceHEXValueToCapitalSequenceByEasyReplace(String sourceString){
         if(sourceString == null || sourceString.length()<=0){
             throw new IllegalArgumentException();
@@ -119,16 +124,22 @@ public class PWGenerator {
             throw new IllegalArgumentException();
         }
 
+        String currentSource = sourceString;
+
         StringBuffer stringBuffer = new StringBuffer();
         do{
-
+            String[] dividedStrings = divideStringToNumberAndOther(currentSource);
+            stringBuffer.append(dividedStrings[0]);
+            currentSource = generateMD5WithRandomCapitalAndLowerLetter(dividedStrings[1],true);
         }while (stringBuffer.length() < 64);
 
         String fullNumberSequence = stringBuffer.substring(0,63).toString();
+        System.out.println(fullNumberSequence);
+        for(int i = 0;i<64;i++){
 
+        }
 
-
-        return
+        return fullNumberSequence;
     }
 
     private String[] divideStringToNumberAndOther(String sourceString){
@@ -183,7 +194,7 @@ public class PWGenerator {
         }
     }
 
-    private String generateMD5WithRandomCapitalAndLowerLetter(String sourceStr){
+    private String generateMD5WithRandomCapitalAndLowerLetter(String sourceStr,boolean isonlyCapital){
         String destStr = "";
         if(sourceStr == null || sourceStr.length()<=0){
             throw new IllegalArgumentException();
@@ -196,6 +207,26 @@ public class PWGenerator {
         } catch (Exception e) {
             destStr = "";
             throw new NullPointerException("MD5加密出现错误");
+        }
+        finally {
+            if(isonlyCapital == false){
+                StringBuffer sbuffer = new StringBuffer();
+                Random r = new Random();
+                for(int i = 0;i<destStr.length();i++){
+                    if(!isSubString(String.valueOf(destStr.charAt(i)),BasicValue.getNUMBERSEQUENCE())){
+                        int ranNumber = r.nextInt(2);
+                        if(ranNumber < 1){
+                            sbuffer.append(String.valueOf(destStr.charAt(i)).toLowerCase());
+                        }else {
+                            sbuffer.append(String.valueOf(destStr.charAt(i)).toUpperCase());
+                        }
+                    }else {
+                        sbuffer.append(String.valueOf(destStr.charAt(i)));
+                    }
+                }
+                destStr = sbuffer.toString();
+            }
+
         }
         return destStr;
     }

@@ -6,8 +6,9 @@ package boyuan.PWGenerator;
 class BasicValue {
     private static final String DEFAULTSTRING           = "HBYlike000";
     private static final String NUMBERSEQUENCE          = "0123456789";
-    private static final String LOWERCASESEQUENCE       = "abcdefghijklmnopqrstuvwxyz";
-    private static final String CAPITALLETTERSEQUERNCE  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String LOWERCASESEQUENCE       = "nopqrstuvwabcdefghijklmxyz";
+    private static final String CAPITALLETTERSEQUERNCE  = "NOPQRSTUVWABCDEFGHIJKLMXYZ";
+    //  0,3,6,9 ->2  1,4,7->0  2,5,8->1
     private static final String SPECHARACTERSEQUENCE    = "!#$%&*+-?=";
     private static final String HEXCAPITALSTRING        = "0123456789ABCDEF";
 
