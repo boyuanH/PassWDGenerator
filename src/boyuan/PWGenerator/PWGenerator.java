@@ -14,7 +14,7 @@ public class PWGenerator {
     private String securityCode;
     private PWType pwType;
     private int length;
-    private final int MAXLength = 11;
+
 
     private String passWD;
 
@@ -46,7 +46,7 @@ public class PWGenerator {
             pwType = PWType.ONLYNUM;
         }
 
-        if(length <=0 || length > MAXLength){
+        if(length <=0 || length > BasicValue.getMAXLength()){
             return false;
         }
 
@@ -65,8 +65,63 @@ public class PWGenerator {
             throw new NullPointerException();
         }
 
+        String sourceString = opencode + BasicValue.getDEFAULTSTRING()+securityCode;
+        switch (pwType){
+            case ONLYNUM:
+            {
+                break;
+            }
+            case ONLYLOWER:
+            {
+                break;
+            }
+            case ONLYCAPITAL:
+            {
+                break;
+            }
+            case NUMANDLOWER:
+            {
+                break;
+            }
+            case NUMANDCAPITAL:
+            {
+                break;
+            }
+            case LOWERANDCAPITAL:
+            {
+                break;
+            }
+            case NUMLOWERCAPITAL:
+            {
+                break;
+            }
+            case NUMANDLOWERSPE:
+            {
+                break;
+            }
+            case NUMANDCAPITALSPE:
+            {
+                break;
+            }
+            case LOWERANDCAPITALSPE:
+            {
+                break;
+            }
+            case NUMLOWERCAPITALSPE:
+            {
+                break;
+            }
+        }
 
+    }
 
+    private String replaceHEXValueToSpecialSequence(String sourceString){
+        String numberSequence = replaceHEXValueToNumberSequenceByEasyReplace(sourceString);
+        StringBuffer sbuffer = new StringBuffer();
+        for(int i = 0;i<numberSequence.length();i++){
+            sbuffer.append(BasicValue.getSPECHARACTERSEQUENCE().charAt(Integer.valueOf(numberSequence.charAt(i))));
+        }
+        return sbuffer.toString();
     }
 
     private String replaceHEXValueToNumberSequenceByEasyReplace(String sourceString){
@@ -135,11 +190,63 @@ public class PWGenerator {
 
         String fullNumberSequence = stringBuffer.substring(0,63).toString();
         System.out.println(fullNumberSequence);
+        StringBuffer sBufferSequenceOut = new StringBuffer();
         for(int i = 0;i<64;i++){
-
+            int frontInt = Integer.valueOf(fullNumberSequence.charAt(i));
+            i++;
+            int backInt  = Integer.valueOf(fullNumberSequence.charAt(i));
+            int indexNum=0;
+            switch (frontInt){
+                case 0:
+                case 3:
+                case 6:
+                case 9:
+                {
+                    switch (backInt){
+                        case 0:
+                        case 1:
+                            indexNum = 20;
+                            break;
+                        case 2:
+                        case 3:
+                            indexNum = 21;
+                            break;
+                        case 4:
+                            indexNum = 22;
+                            break;
+                        case 5:
+                            indexNum = 23;
+                            break;
+                        case 6:
+                        case 7:
+                            indexNum = 24;
+                            break;
+                        case 8:
+                        case 9:
+                            indexNum = 25;
+                            break;
+                    }
+                    break;
+                }
+                case 1:
+                case 4:
+                case 7:
+                {
+                    indexNum = backInt;
+                    break;
+                }
+                case 2:
+                case 5:
+                case 8:
+                {
+                    indexNum = 10+backInt;
+                    break;
+                }
+            }
+            sBufferSequenceOut.append(BasicValue.getCAPITALLETTERSEQUERNCE().charAt(indexNum));
         }
 
-        return fullNumberSequence;
+        return sBufferSequenceOut.toString();
     }
 
     private String[] divideStringToNumberAndOther(String sourceString){
