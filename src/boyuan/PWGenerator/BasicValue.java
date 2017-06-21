@@ -12,7 +12,7 @@ class BasicValue {
     //  0,3,6,9 ->2  1,4,7->0  2,5,8->1
     private static final String SPECHARACTERSEQUENCE    = "!#$%&*+-?=";
     private static final String HEXCAPITALSTRING        = "0123456789ABCDEF";
-    private static final int[] PRIMESEQUENCE = new int[]{2,3,5,6,11,13,17,19,23,29,31};
+    private static final int[] PRIMESEQUENCE = new int[]{2,3,5,7,11,13,17,19,23,29,31};
 
     public static int getMAXLength() {
         return MAXLength;

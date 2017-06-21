@@ -3,6 +3,8 @@ package boyuan.PWGenerator;
 import javax.print.DocFlavor;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -15,6 +17,10 @@ public class PWGenerator {
     private PWType pwType;
     private int length;
 
+    private String numberSequence   ;
+    private String capitalSequence  ;
+    private String lowerSequence    ;
+    private String specialSequence  ;
 
     private String passWD;
 
@@ -23,6 +29,20 @@ public class PWGenerator {
             generatePassWD();
         }
         return passWD;
+    }
+
+    public void resetGenerator(PWType type){
+        resetGenerator(type,length);
+    }
+
+    public void resetGenerator(int curLength){
+        resetGenerator(pwType,curLength);
+    }
+
+    public void resetGenerator(PWType type,int curLength){
+        pwType = type;
+        length = curLength;
+        passWD = "";
     }
 
     public String getSecurityCode() {
@@ -34,6 +54,7 @@ public class PWGenerator {
         this.securityCode = securityCode;
         this.pwType = pwType;
         this.length = length;
+        InitGenerator();
     }
 
     private boolean sourceLegalCheck(){
@@ -60,66 +81,132 @@ public class PWGenerator {
         return false;
     }
 
-    private void generatePassWD(){
+    private void InitGenerator(){
         if(!sourceLegalCheck()){
             throw new NullPointerException();
         }
-
         String sourceString = opencode + BasicValue.getDEFAULTSTRING()+securityCode;
+        String mdSource = generateMD5WithRandomCapitalAndLowerLetter(sourceString,true);
+        numberSequence   = replaceHEXValueToNumberSequenceByEasyReplace(mdSource);
+        capitalSequence  = replaceHEXValueToCapitalSequenceByEasyReplace(mdSource);
+        lowerSequence    = replaceHEXValueToLowerSequenceByEasyReplace(mdSource);
+        specialSequence  = replaceHEXValueToSpecialSequence(mdSource);
+    }
+
+    private void generatePassWD(){
+        if( numberSequence == null || numberSequence.length()<=0||
+                capitalSequence == null || capitalSequence.length()<=0||
+                lowerSequence == null || lowerSequence.length()<=0||
+                specialSequence == null || specialSequence.length()<=0){
+            throw new NullPointerException();
+        }
+
+
+        StringBuffer pswdSB = new StringBuffer();
+
+        List<String> sequences = new LinkedList<>();
         switch (pwType){
             case ONLYNUM:
             {
+                sequences.add(numberSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case ONLYLOWER:
             {
+                sequences.add(lowerSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case ONLYCAPITAL:
             {
+                sequences.add(capitalSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMANDLOWER:
             {
+                sequences.add(numberSequence);
+                sequences.add(lowerSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMANDCAPITAL:
             {
+                sequences.add(numberSequence);
+                sequences.add(capitalSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case LOWERANDCAPITAL:
             {
+                sequences.add(lowerSequence);
+                sequences.add(capitalSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMLOWERCAPITAL:
             {
+                sequences.add(numberSequence);
+                sequences.add(lowerSequence);
+                sequences.add(capitalSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMANDLOWERSPE:
             {
+                sequences.add(numberSequence);
+                sequences.add(lowerSequence);
+                sequences.add(specialSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMANDCAPITALSPE:
             {
+                sequences.add(numberSequence);
+                sequences.add(capitalSequence);
+                sequences.add(specialSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case LOWERANDCAPITALSPE:
             {
+                sequences.add(lowerSequence);
+                sequences.add(capitalSequence);
+                sequences.add(specialSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
             case NUMLOWERCAPITALSPE:
             {
+                sequences.add(numberSequence);
+                sequences.add(lowerSequence);
+                sequences.add(capitalSequence);
+                sequences.add(specialSequence);
+                passWD = fetchFromSequences(sequences);
                 break;
             }
         }
 
     }
 
+    private String fetchFromSequences(List<String> sequences){
+        StringBuffer passwdBuffer = new StringBuffer();
+        for(int i = 0;i<length;){
+            int index;
+            for(int j=0;j<sequences.size()&&i<length;j++,i++){
+                index = BasicValue.getPRIMESEQUENCE()[i];
+                passwdBuffer.append(sequences.get(j).charAt(index));
+            }
+        }
+        return passwdBuffer.substring(0,length);
+    }
+
     private String replaceHEXValueToSpecialSequence(String sourceString){
         String numberSequence = replaceHEXValueToNumberSequenceByEasyReplace(sourceString);
         StringBuffer sbuffer = new StringBuffer();
         for(int i = 0;i<numberSequence.length();i++){
-            sbuffer.append(BasicValue.getSPECHARACTERSEQUENCE().charAt(Integer.valueOf(numberSequence.charAt(i))));
+            sbuffer.append(BasicValue.getSPECHARACTERSEQUENCE().charAt(Character.getNumericValue(numberSequence.charAt(i))));
         }
         return sbuffer.toString();
     }
@@ -136,7 +223,7 @@ public class PWGenerator {
         sourceString = sourceString.toUpperCase();
         StringBuffer stringBuffer = new StringBuffer();
         for(int i = 0;i<sourceString.length();i++){
-            if(BasicValue.getNUMBERSEQUENCE().indexOf(sourceString.charAt(i)) != -1){
+            if(BasicValue.getNUMBERSEQUENCE().indexOf(sourceString.charAt(i)) == -1){
                 // 非数字
                 switch (String.valueOf(sourceString.charAt(i))){
                     case "A":
@@ -164,7 +251,7 @@ public class PWGenerator {
                 stringBuffer.append(sourceString.charAt(i));
             }
         }
-        return stringBuffer.toString();
+        return stringBuffer.substring(0,32);
     }
 
     private String replaceHEXValueToLowerSequenceByEasyReplace(String sourceString){
@@ -188,13 +275,13 @@ public class PWGenerator {
             currentSource = generateMD5WithRandomCapitalAndLowerLetter(dividedStrings[1],true);
         }while (stringBuffer.length() < 64);
 
-        String fullNumberSequence = stringBuffer.substring(0,63).toString();
+        String fullNumberSequence = stringBuffer.substring(0,64).toString();
         System.out.println(fullNumberSequence);
         StringBuffer sBufferSequenceOut = new StringBuffer();
         for(int i = 0;i<64;i++){
-            int frontInt = Integer.valueOf(fullNumberSequence.charAt(i));
+            int frontInt = Character.getNumericValue(fullNumberSequence.charAt(i));
             i++;
-            int backInt  = Integer.valueOf(fullNumberSequence.charAt(i));
+            int backInt = Character.getNumericValue(fullNumberSequence.charAt(i));
             int indexNum=0;
             switch (frontInt){
                 case 0:

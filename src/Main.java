@@ -1,3 +1,6 @@
+import boyuan.PWGenerator.PWGenerator;
+import boyuan.PWGenerator.PWType;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -8,14 +11,14 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        String str = "abc";
-        System.out.println(generateMD5(str).toUpperCase());
+        String open = "ccb";
+        String security = "SecurityCode";
+        int length = 10;
+        PWGenerator generator = new PWGenerator(open,security, PWType.NUMANDCAPITALSPE,length);
+        String passwd = generator.getPassWD();
+        generator.resetGenerator(PWType.ONLYNUM,6);
+        passwd = generator.getPassWD();
+
     }
 
-
-    private static String generateMD5(String sourceStr){
-        String destStr = "";
-
-        return destStr;
-    }
 }
