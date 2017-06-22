@@ -192,12 +192,15 @@ public class PWGenerator {
 
     private String fetchFromSequences(List<String> sequences){
         StringBuffer passwdBuffer = new StringBuffer();
-        for(int i = 0;i<length;){
-            int index;
-            for(int j=0;j<sequences.size()&&i<length;j++,i++){
-                index = BasicValue.getPRIMESEQUENCE()[i];
-                passwdBuffer.append(sequences.get(j).charAt(index));
-            }
+        for(int i = 0;i<length;i++){
+            int index = BasicValue.getPRIMESEQUENCE()[i];
+            int sequenceIndex = Character.getNumericValue(numberSequence.charAt(i)) % sequences.size();
+            passwdBuffer.append(sequences.get(sequenceIndex).charAt(index));
+//            int index;
+//            for(int j=0;j<sequences.size()&&i<length;j++,i++){
+//                index = BasicValue.getPRIMESEQUENCE()[i];
+//                passwdBuffer.append(sequences.get(j).charAt(index));
+//            }
         }
         return passwdBuffer.substring(0,length);
     }
