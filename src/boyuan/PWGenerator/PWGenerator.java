@@ -279,7 +279,6 @@ public class PWGenerator {
         }while (stringBuffer.length() < 64);
 
         String fullNumberSequence = stringBuffer.substring(0,64).toString();
-        System.out.println(fullNumberSequence);
         StringBuffer sBufferSequenceOut = new StringBuffer();
         for(int i = 0;i<64;i++){
             int frontInt = Character.getNumericValue(fullNumberSequence.charAt(i));
